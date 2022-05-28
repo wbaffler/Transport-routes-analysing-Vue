@@ -51,7 +51,7 @@ import { loadYmap } from 'vue-yandex-maps';
 
 
 const settings = {
-  apiKey: 'c0a534b3-a0fa-409a-a7b0-edce7daeddc3',
+  apiKey: '0264e5d4-2f0f-4c70-9944-1c0d8b4cddf1',
   lang: 'ru_RU',
   coordorder: 'latlong',
   enterprise: false,
