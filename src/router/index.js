@@ -3,6 +3,8 @@ import {createRouter, createWebHistory} from "vue-router";
 import MainPage from '/src/components/main.vue'
 import HeatMap from '/src/components/heatmap.vue'
 import TransportMap from '/src/components/transportmap.vue'
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css';
 
 
 const routes = [
@@ -34,6 +36,19 @@ const routes = [
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
     routes
+})
+
+router.beforeResolve((to, from, next) => {
+    if (to.name) {
+        // Запустить отображение загрузки
+        NProgress.start()
+    }
+    next()
+})
+
+router.afterEach(() => {
+    // Завершить отображение загрузки
+    NProgress.done()
 })
 
 export default router

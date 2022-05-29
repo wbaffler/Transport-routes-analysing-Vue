@@ -25,13 +25,14 @@
   </header>
 
   <main class="main">
-    <div id="transportmap" ></div>
+    <div class="loading-screen" v-if="!loadedMap"></div>
+    <div id="transportmap"></div>
     <div id="data-container">
       <div class="map-container">
         <div class="districts-choice">
           <h1 class="districts-choice__title">Карта совпадающих маршрутов</h1>
-          <a href="#" id="districts-choice__button">
-            <p id="districts-choice__button-text" v-on:click="DistrictButtonEvent()">Выбор района</p>
+          <a href="#" id="districts-choice__button" v-on:click="DistrictButtonEvent()">
+            <p id="districts-choice__button-text">Выбор района</p>
           </a>
         </div>
 
@@ -61,11 +62,10 @@
             </a>
           </div>
         </div>
-
-
       </div>
-      <a href="#" v-on:click="AllTransportButEvent()" >
-        <div id="all-transport-area" :class="{ 'all-transport-area-active': allTransportMode }"></div>
+
+      <a href="#" v-if="currentDistrict === districts[0]" v-on:click="AllTransportButEvent()">
+        <div class="all-transport-area" :class="{ 'all-transport-area-active': allTransportMode }"></div>
       </a>
 
 
@@ -73,8 +73,7 @@
       <div id="districts-window" v-if="districtsWindowSeen">
         <div id="districts-window__container-top">
           <h1 id="districts-window__title">Выбор района</h1>
-          <a href="#">
-            <div id="districts-window__cross-but" v-on:click="CloseButtonEvent()"></div>
+          <a href="#" id="districts-window__cross-but" v-on:click="CloseButtonEvent()">
           </a>
         </div>
         <div id="districts-window__list">
@@ -91,9 +90,7 @@
 </template>
 
 <script>
-import { loadScript } from "vue-plugin-load-script";
 import { loadYmap } from 'vue-yandex-maps';
-import router from "@/router";
 
 
 const settings = {
@@ -124,6 +121,7 @@ name: "TransportMap",
       counter: 0,
       allTransportMode: false,
       allRoutes: [],
+      loadedMap: false,
     };
   },
   methods: {
@@ -132,7 +130,7 @@ name: "TransportMap",
     },
     routeButtonEvent(r){
       r.pushed = !r.pushed
-      for (let route of this.routes){
+      for (let route of this.updatedRoutes){
         if (route !== r){
           route.pushed = false;
         }
@@ -146,11 +144,16 @@ name: "TransportMap",
 
     },
     AllTransportButEvent(){
-      this.allTransportMode = !this.allTransportMode;
-      if (this.allTransportMode){
+      for (let route of this.updatedRoutes) {
+        route.pushed = false;
+      }
+      this.loadedMap = false;
+      if (!this.allTransportMode){
+        this.allTransportMode = true;
         this.updatedRoutes = this.allRoutes;
       }
       else {
+        this.allTransportMode = false;
         this.updatedRoutes = this.routes;
       }
       this.DisplayRoutesOnMap(this.currentDistrict);
@@ -162,7 +165,8 @@ name: "TransportMap",
       this.districtsWindowSeen = false
     },
     DistrictChoiceEvent(district){
-      this.districtsWindowSeen = false
+      this.districtsWindowSeen = false;
+      this.allTransportMode = false;
       this.currentDistrict = district;
       this.districtName = district.obj.name;
       this.DisplayRoutesInList(district);
@@ -203,14 +207,19 @@ name: "TransportMap",
         }
         this.DrawRouteOnMap(coordinates, route, true);
       }
+      this.loadedMap = true;
     },
 
     setRouteOnMap(route) {
       let coordinates = [];
+      let la = 0;
+      let lo = 0;
       for (let stop of route.stops){
+        la += stop.latitude;
+        lo += stop.longitude;
         coordinates.push([stop.latitude, stop.longitude]);
       }
-      const coords = [route.stops[0].latitude, route.stops[0].longitude];
+      const coords = [la / route.stops.length, lo / route.stops.length];
       myMap.geoObjects.removeAll();
       myMap.setCenter(coords);
       myMap.setZoom(13);
@@ -271,6 +280,7 @@ name: "TransportMap",
         }
         this.DrawRouteOnMap(coordinates, route, true);
       }
+      this.loadedMap = true;
     },
     setRouteColor(routes){
       return new Promise(function (resolve){
@@ -312,8 +322,8 @@ name: "TransportMap",
               },
               coords: moscowCenterCoords
             };
-            const districtsLength = districts.length + 1;
-            districtsArr.push(districtAll);
+            const districtsLength = districts.length;
+
             //BuildDistrictsWindow(districtAll, moscowCenterCoords, listPlace, routes);
             let geoCode;
             for (const district of districts) {
@@ -323,14 +333,19 @@ name: "TransportMap",
               }).then(function (res) {
                 let firstGeoObject = res.geoObjects.get(0);
                 let coords = firstGeoObject.geometry.getCoordinates();
+                district.name = district.name.replace('район ', '');
+                district.name = district.name.replace(' район', '');
                 let districtObj = {
                   obj: district,
                   coords: coords
                 }
+
                 districtsArr.push(districtObj);
                 if (districtsArr.length === districtsLength)
                 {
-                  resolve(districtsArr.sort((a, b) => a.obj.routePairsCount > b.obj.routePairsCount ? -1 : 1));
+                  districtsArr.sort((a, b) => a.obj.name < b.obj.name ? -1 : 1)
+                  districtsArr.unshift(districtAll);
+                  resolve(districtsArr);
                 }
               })
             }
@@ -350,10 +365,11 @@ name: "TransportMap",
   },
   computed: {
     loadedRoutes(){
-      return this.updatedRoutes.filter(r => r.firstRoute.number.includes(this.query));
+      return this.updatedRoutes.filter(r => r.firstRoute.number.includes(this.query.toUpperCase())
+          || r.secondRoute.number.includes(this.query.toUpperCase()));
     },
     loadedAllRoutes(){
-      return this.allRoutes.filter(r => r.number.includes(this.query));
+      return this.allRoutes.filter(r => r.number.includes(this.query.toUpperCase()));
     },
 
   },

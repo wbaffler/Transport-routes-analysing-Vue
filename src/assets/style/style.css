@@ -131,7 +131,7 @@ a {
  */
 
 a:focus {
-    outline: thin dotted;
+    outline: none;
 }
 
 /**
@@ -140,7 +140,11 @@ a:focus {
 
 a:active,
 a:hover {
-    outline: 0;
+    outline: none;
+}
+
+div:active{
+    outline: none;
 }
 
 /**
@@ -497,6 +501,7 @@ body{
 }
 
 .basic__goal-text{
+    text-align: justify;
     padding: 20px 69px 55px;
     font-style: normal;
     font-weight: 400;
@@ -1007,7 +1012,7 @@ body{
     flex-direction: row;
 }
 
-#all-transport-area{
+.all-transport-area{
     position: absolute; /* блок занимает ширину содержимого, max-width её ограничивает */
     right: 0;
     margin-top: 15px;
@@ -1024,7 +1029,7 @@ body{
 
 }
 
-#all-transport-area:hover{
+.all-transport-area:hover{
 
     background-image: url('/src/assets/bus (5).png');
     background-position: center;
@@ -1032,8 +1037,34 @@ body{
     background-size: 20px;
 
 }
-#all-transport-area-active{
 
+.all-transport-area:hover:after {
+    width: 80px;
+    content: "Все маршруты";
+    position: absolute;
+    top: 55px;
+    left: calc(50px / 2 - 85px / 2);
+    z-index: 1;
+    background: #576065;
+    color: #fff;
+    text-align: center;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    padding: 5px 5px;
+    border-radius: var(--radius-blocks);
+}
+
+.all-transport-area-active{
+    position: absolute; /* блок занимает ширину содержимого, max-width её ограничивает */
+    right: 0;
+    margin-top: 15px;
+    margin-right: 60px;
+    width: 50px;
+
+    height: 50px;
+    background: var(--color-block);
+    border-radius: var(--radius-blocks);
     background-image: url('/src/assets/bus (6).png');
     background-position: center;
     background-repeat: no-repeat;
@@ -1301,9 +1332,21 @@ input[type="text"]
 #districts-window__cross-but{
     width: 24px;
     height: 24px;
-    margin-top: 21px;
-    margin-right: 15px;
-    background-image: url(/src/assets/close.svg);
+    margin-top: 10px;
+    margin-right: 10px;
+
+    background-image: url('/src/assets/close (1).png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 15px;
+
+
+}
+#districts-window__cross-but:hover{
+    background-image: url('/src/assets/close (2).png');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 15px;
 
 
 }
@@ -1342,7 +1385,7 @@ input[type="text"]
 
 #districts-window__districts-text{
 
-    height: 27px;
+
 
     font-style: normal;
     font-weight: 600;
@@ -1352,7 +1395,17 @@ input[type="text"]
     color: var(--color-text);
     /* identical to box height */
 
-
-    color: var(--color-text);
 }
 
+.loading-screen{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(5px);
+    z-index: 100;
+
+    background-image: url('/src/assets/Eclipse-1s-204px (1).gif');
+    background-position: center;
+    background-repeat: no-repeat;
+
+}
