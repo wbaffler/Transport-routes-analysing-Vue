@@ -867,6 +867,13 @@ body{
     background: #f5f5f5;
 }
 
+.summary_district-link-pushed{
+    display: block;
+    padding-left: 30px;
+    height: 167px;
+    background: #e9ebef;
+}
+
 
 
 .summary__district-name{
@@ -1408,4 +1415,12 @@ input[type="text"]
     background-position: center;
     background-repeat: no-repeat;
 
+}
+
+
+.fade-enter-active, .fade-leave-active {
+    transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active до версии 2.1.8 */ {
+    opacity: 0;
 }

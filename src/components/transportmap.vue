@@ -25,7 +25,9 @@
   </header>
 
   <main class="main">
-    <div class="loading-screen" v-if="!loadedMap"></div>
+    <transition name="fade">
+      <div class="loading-screen" v-if="!loadedMap"></div>
+    </transition>
     <div id="transportmap"></div>
     <div id="data-container">
       <div class="map-container">
@@ -46,7 +48,7 @@
 
           </div>
           <div class="transport-info__list" v-if="!allTransportMode">
-            <a class="transport-info__route-link" href="#" v-for="r in loadedRoutes" v-on:click="routeButtonEvent(r)"
+            <a class="transport-info__route-link" href="#" v-for="r in loadedRoutes" :key="r" v-on:click="routeButtonEvent(r)"
                :class="{ 'transport-info__route-link-pushed': r.pushed }">
               <p class="transport-info__type-transport">{{r.firstRoute.type}}</p>
               <h2 class="transport-info__routes-text">{{r.firstRoute.number + "-" + r.secondRoute.number}}</h2>
@@ -55,7 +57,7 @@
           </div>
 
           <div class="transport-info__list" v-if="allTransportMode">
-            <a class="transport-info__route-link" href="#" v-for="r in loadedAllRoutes" v-on:click="routeButtonEvent(r)"
+            <a class="transport-info__route-link" href="#" v-for="r in loadedAllRoutes" :key="r" v-on:click="routeButtonEvent(r)"
                :class="{ 'transport-info__route-link-pushed': r.pushed }">
               <p class="transport-info__type-transport">{{r.type}}</p>
               <h2 class="transport-info__routes-text">{{r.number}}</h2>
@@ -77,7 +79,7 @@
           </a>
         </div>
         <div id="districts-window__list">
-          <a id="districts-window__district-link" href="#" v-for="d in districts" v-on:click="DistrictChoiceEvent(d)">
+          <a id="districts-window__district-link" href="#" v-for="d in districts" :key="d" v-on:click="DistrictChoiceEvent(d)">
             <h2 id="districts-window__districts-text">{{ d.obj.name }}</h2>
           </a>
         </div>
@@ -91,10 +93,9 @@
 
 <script>
 import { loadYmap } from 'vue-yandex-maps';
-
-
+/* eslint-disable */
 const settings = {
-  apiKey: '0264e5d4-2f0f-4c70-9944-1c0d8b4cddf1',
+  apiKey: 'c0a534b3-a0fa-409a-a7b0-edce7daeddc3',
   lang: 'ru_RU',
   coordorder: 'latlong',
   enterprise: false,
